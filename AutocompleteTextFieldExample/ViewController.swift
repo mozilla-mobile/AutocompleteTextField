@@ -3,19 +3,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import UIKit
+import AutocompleteTextField
 
 class ViewController: UIViewController {
+    let domainCompletionSource = DomainCompletionSource()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        let textField = AutocompleteTextField()
+        textField.layer.borderColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1).cgColor
+        textField.layer.borderWidth = 0.5
+        textField.keyboardType = .webSearch
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.completionSource = domainCompletionSource
+        textField.accessibilityLabel = "Domain"
+        view.addSubview(textField)
+
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            textField.widthAnchor.constraint(equalTo: view.widthAnchor),
+        ])
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
-

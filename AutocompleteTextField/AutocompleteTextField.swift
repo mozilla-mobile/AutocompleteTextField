@@ -16,7 +16,7 @@ public protocol AutocompleteTextFieldCompletionSource: class {
 }
 
 public class AutocompleteTextField: UITextField, UITextFieldDelegate {
-    public var highlightColor = UIColor(red: 0.784, green: 0.427, blue: 0.843, alpha: 1)
+    public var highlightColor = UIColor(red: 0, green: 0.333, blue: 0.666, alpha: 0.2)
 
     public weak var completionSource: AutocompleteTextFieldCompletionSource?
     public weak var autocompleteDelegate: AutocompleteTextFieldDelegate?

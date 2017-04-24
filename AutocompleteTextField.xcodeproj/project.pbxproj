@@ -16,6 +16,8 @@
 		D310835A1EAA7C3700ECF778 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D31083591EAA7C3700ECF778 /* Assets.xcassets */; };
 		D310835D1EAA7C3700ECF778 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D310835B1EAA7C3700ECF778 /* LaunchScreen.storyboard */; };
 		D31083631EAA7CA200ECF778 /* AutocompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31083621EAA7CA200ECF778 /* AutocompleteTextField.swift */; };
+		D31083661EAA885C00ECF778 /* topdomains.txt in Resources */ = {isa = PBXBuildFile; fileRef = D31083651EAA885C00ECF778 /* topdomains.txt */; };
+		D310836A1EAA8B4A00ECF778 /* DomainCompletionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31083691EAA8B4A00ECF778 /* DomainCompletionSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,8 @@
 		D310835C1EAA7C3700ECF778 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D310835E1EAA7C3700ECF778 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D31083621EAA7CA200ECF778 /* AutocompleteTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutocompleteTextField.swift; sourceTree = "<group>"; };
+		D31083651EAA885C00ECF778 /* topdomains.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = topdomains.txt; sourceTree = "<group>"; };
+		D31083691EAA8B4A00ECF778 /* DomainCompletionSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DomainCompletionSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,11 +118,13 @@
 			isa = PBXGroup;
 			children = (
 				D31083521EAA7C3700ECF778 /* AppDelegate.swift */,
+				D31083691EAA8B4A00ECF778 /* DomainCompletionSource.swift */,
 				D31083541EAA7C3700ECF778 /* ViewController.swift */,
-				D31083561EAA7C3700ECF778 /* Main.storyboard */,
+				D31083651EAA885C00ECF778 /* topdomains.txt */,
 				D31083591EAA7C3700ECF778 /* Assets.xcassets */,
 				D310835B1EAA7C3700ECF778 /* LaunchScreen.storyboard */,
 				D310835E1EAA7C3700ECF778 /* Info.plist */,
+				D31083561EAA7C3700ECF778 /* Main.storyboard */,
 			);
 			path = AutocompleteTextFieldExample;
 			sourceTree = "<group>";
@@ -246,20 +252,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D31083391EAA7BF500ECF778 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D310834E1EAA7C3600ECF778 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D310835D1EAA7C3700ECF778 /* LaunchScreen.storyboard in Resources */,
 				D310835A1EAA7C3700ECF778 /* Assets.xcassets in Resources */,
+				D31083661EAA885C00ECF778 /* topdomains.txt in Resources */,
 				D31083581EAA7C3700ECF778 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D370686E1EAE68B2000D6BA7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
