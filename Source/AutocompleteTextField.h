@@ -9,7 +9,3 @@ FOUNDATION_EXPORT double AutocompleteTextFieldVersionNumber;
 
 //! Project version string for AutocompleteTextField.
 FOUNDATION_EXPORT const unsigned char AutocompleteTextFieldVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <AutocompleteTextField/PublicHeader.h>
-
-
