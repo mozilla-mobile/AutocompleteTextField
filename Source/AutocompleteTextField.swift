@@ -15,7 +15,7 @@ public protocol AutocompleteTextFieldCompletionSource: class {
     @objc optional func autocompleteTextField(_ autocompleteTextField: AutocompleteTextField, didTextChange text: String)
 }
 
-public class AutocompleteTextField: UITextField, UITextFieldDelegate {
+open class AutocompleteTextField: UITextField, UITextFieldDelegate {
     public var highlightColor = UIColor(red: 0, green: 0.333, blue: 0.666, alpha: 0.2)
 
     public weak var completionSource: AutocompleteTextFieldCompletionSource?
@@ -37,7 +37,7 @@ public class AutocompleteTextField: UITextField, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override public var text: String? {
+    override open var text: String? {
         didSet {
             applyCompletion()
             super.text = text
@@ -66,7 +66,7 @@ public class AutocompleteTextField: UITextField, UITextFieldDelegate {
         autocompleteDelegate?.autocompleteTextField?(self, didTextChange: textBeforeCompletion ?? "")
     }
 
-    override public func deleteBackward() {
+    override open func deleteBackward() {
         lastReplacement = nil
 
         guard completionRange == nil else {
@@ -91,21 +91,21 @@ public class AutocompleteTextField: UITextField, UITextFieldDelegate {
         return autocompleteDelegate?.autocompleteTextFieldShouldReturn?(self) ?? true
     }
 
-    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         applyCompletion()
         super.touchesBegan(touches, with: event)
     }
 
-    override public func caretRect(for forPosition: UITextPosition) -> CGRect {
+    override open func caretRect(for forPosition: UITextPosition) -> CGRect {
         return (completionRange != nil) ? CGRect.zero : super.caretRect(for: forPosition)
     }
 
-    override public func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
+    override open func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
         removeCompletion()
         super.setMarkedText(markedText, selectedRange: selectedRange)
     }
 
-    private func highlightAll() {
+    open func highlightAll() {
         let text = self.text
         self.text = nil
         setCompletion(text ?? "")
