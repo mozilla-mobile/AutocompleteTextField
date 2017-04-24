@@ -4,20 +4,22 @@
 
 import UIKit
 
-protocol AutocompleteTextFieldSource: class {
-    func completion(forText text: String) -> String?
+public protocol AutocompleteTextFieldCompletionSource: class {
+    func autocompleteTextFieldCompletionSource(_ autocompleteTextField: AutocompleteTextField, forText text: String) -> String?
 }
 
-@objc protocol AutocompleteTextFieldDelegate: class {
+@objc public protocol AutocompleteTextFieldDelegate: class {
     @objc optional func autocompleteTextFieldShouldBeginEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
     @objc optional func autocompleteTextFieldShouldEndEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
     @objc optional func autocompleteTextFieldShouldReturn(_ autocompleteTextField: AutocompleteTextField) -> Bool
     @objc optional func autocompleteTextField(_ autocompleteTextField: AutocompleteTextField, didTextChange text: String)
 }
 
-class AutocompleteTextField: UITextField, UITextFieldDelegate {
-    weak var source: AutocompleteTextFieldSource?
-    weak var autocompleteDelegate: AutocompleteTextFieldDelegate?
+public class AutocompleteTextField: UITextField, UITextFieldDelegate {
+    public var highlightColor = UIColor(red: 0.784, green: 0.427, blue: 0.843, alpha: 1)
+
+    public weak var completionSource: AutocompleteTextFieldCompletionSource?
+    public weak var autocompleteDelegate: AutocompleteTextFieldDelegate?
 
     /// The range of the current completion, or nil if there is no active completion.
     private var completionRange: NSRange?
@@ -25,17 +27,17 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
     // The last string used as a replacement in shouldChangeCharactersInRange.
     private var lastReplacement: String?
 
-    init() {
+    public init() {
         super.init(frame: CGRect.zero)
         addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         delegate = self
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var text: String? {
+    override public var text: String? {
         didSet {
             applyCompletion()
             super.text = text
@@ -43,7 +45,7 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
         }
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         lastReplacement = string
         return true
     }
@@ -55,7 +57,8 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
         let isAtEnd = selectedTextRange?.start == endOfDocument
         let textBeforeCompletion = text
         let isEmpty = lastReplacement?.isEmpty ?? true
-        if !isEmpty, isAtEnd, markedTextRange == nil, let completion = source?.completion(forText: text ?? "") {
+        if !isEmpty, isAtEnd, markedTextRange == nil,
+           let completion = completionSource?.autocompleteTextFieldCompletionSource(self, forText: text ?? "") {
             setCompletion(completion)
         }
 
@@ -63,7 +66,7 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
         autocompleteDelegate?.autocompleteTextField?(self, didTextChange: textBeforeCompletion ?? "")
     }
 
-    override func deleteBackward() {
+    override public func deleteBackward() {
         lastReplacement = nil
 
         guard completionRange == nil else {
@@ -75,29 +78,34 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
         super.deleteBackward()
     }
 
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return autocompleteDelegate?.autocompleteTextFieldShouldBeginEditing?(self) ?? true
     }
 
-    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         applyCompletion()
         return autocompleteDelegate?.autocompleteTextFieldShouldEndEditing?(self) ?? true
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return autocompleteDelegate?.autocompleteTextFieldShouldReturn?(self) ?? true
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         applyCompletion()
         super.touchesBegan(touches, with: event)
     }
 
-    override func caretRect(for forPosition: UITextPosition) -> CGRect {
+    override public func caretRect(for forPosition: UITextPosition) -> CGRect {
         return (completionRange != nil) ? CGRect.zero : super.caretRect(for: forPosition)
     }
 
-    func highlightAll() {
+    override public func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
+        removeCompletion()
+        super.setMarkedText(markedText, selectedRange: selectedRange)
+    }
+
+    private func highlightAll() {
         let text = self.text
         self.text = nil
         setCompletion(text ?? "")
@@ -126,22 +134,17 @@ class AutocompleteTextField: UITextField, UITextFieldDelegate {
         text = (text as NSString?)?.replacingCharacters(in: completionRange, with: "")
     }
 
-    override func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
-        removeCompletion()
-        super.setMarkedText(markedText, selectedRange: selectedRange)
-    }
-
     private func setCompletion(_ completion: String) {
         let text = self.text ?? ""
 
         // Ignore this completion if it's empty or doesn't start with the current text.
-        guard !completion.isEmpty, completion.lowercased().startsWith(other: text.lowercased()) else { return }
+        guard !completion.isEmpty, completion.lowercased().hasPrefix(text.lowercased()) else { return }
 
         // Add the completion suffix to the current text and highlight it.
         let completion = completion.substring(from: completion.index(completion.startIndex, offsetBy: text.characters.count))
         let attributed = NSMutableAttributedString(string: text + completion)
         let range = NSMakeRange((text as NSString).length, (completion as NSString).length)
-        attributed.addAttribute(NSBackgroundColorAttributeName, value: UIConstants.colors.urlTextHighlight, range: range)
+        attributed.addAttribute(NSBackgroundColorAttributeName, value: highlightColor, range: range)
         attributedText = attributed
         completionRange = range
     }
