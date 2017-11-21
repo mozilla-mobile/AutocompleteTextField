@@ -131,6 +131,11 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         guard let completionRange = completionRange else { return }
 
         applyCompletion()
+
+        // Fixes: https://github.com/mozilla-mobile/focus-ios/issues/630
+        // Prevents the hard crash when you select all and start a new query
+        guard let count = text?.count, count > 1 else { return }
+
         text = (text as NSString?)?.replacingCharacters(in: completionRange, with: "")
     }
 
