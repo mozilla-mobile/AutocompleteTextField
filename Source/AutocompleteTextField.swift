@@ -8,11 +8,18 @@ public protocol AutocompleteTextFieldCompletionSource: class {
     func autocompleteTextFieldCompletionSource(_ autocompleteTextField: AutocompleteTextField, forText text: String) -> String?
 }
 
-@objc public protocol AutocompleteTextFieldDelegate: class {
-    @objc optional func autocompleteTextFieldShouldBeginEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
-    @objc optional func autocompleteTextFieldShouldEndEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
-    @objc optional func autocompleteTextFieldShouldReturn(_ autocompleteTextField: AutocompleteTextField) -> Bool
-    @objc optional func autocompleteTextField(_ autocompleteTextField: AutocompleteTextField, didTextChange text: String)
+public protocol AutocompleteTextFieldDelegate: class {
+	func autocompleteTextFieldShouldBeginEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
+	func autocompleteTextFieldShouldEndEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool
+	func autocompleteTextFieldShouldReturn(_ autocompleteTextField: AutocompleteTextField) -> Bool
+	func autocompleteTextField(_ autocompleteTextField: AutocompleteTextField, didTextChange text: String)
+}
+
+public extension AutocompleteTextFieldDelegate {
+	func autocompleteTextFieldShouldBeginEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool { return true }
+	func autocompleteTextFieldShouldEndEditing(_ autocompleteTextField: AutocompleteTextField) -> Bool { return true }
+	func autocompleteTextFieldShouldReturn(_ autocompleteTextField: AutocompleteTextField) -> Bool { return true }
+	func autocompleteTextField(_ autocompleteTextField: AutocompleteTextField, didTextChange text: String) {}
 }
 
 open class AutocompleteTextField: UITextField, UITextFieldDelegate {
@@ -41,7 +48,7 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         didSet {
             applyCompletion()
             super.text = text
-            autocompleteDelegate?.autocompleteTextField?(self, didTextChange: text ?? "")
+            autocompleteDelegate?.autocompleteTextField(self, didTextChange: text ?? "")
         }
     }
 
@@ -63,7 +70,7 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         }
 
         // Fire the delegate with the text the user typed (not including the completion).
-        autocompleteDelegate?.autocompleteTextField?(self, didTextChange: textBeforeCompletion ?? "")
+        autocompleteDelegate?.autocompleteTextField(self, didTextChange: textBeforeCompletion ?? "")
     }
 
     override open func deleteBackward() {
@@ -79,16 +86,16 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
     }
 
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        return autocompleteDelegate?.autocompleteTextFieldShouldBeginEditing?(self) ?? true
+        return autocompleteDelegate?.autocompleteTextFieldShouldBeginEditing(self) ?? true
     }
 
     public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         applyCompletion()
-        return autocompleteDelegate?.autocompleteTextFieldShouldEndEditing?(self) ?? true
+        return autocompleteDelegate?.autocompleteTextFieldShouldEndEditing(self) ?? true
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return autocompleteDelegate?.autocompleteTextFieldShouldReturn?(self) ?? true
+        return autocompleteDelegate?.autocompleteTextFieldShouldReturn(self) ?? true
     }
 
     override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -135,7 +142,6 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         // Fixes: https://github.com/mozilla-mobile/focus-ios/issues/630
         // Prevents the hard crash when you select all and start a new query
         guard let count = text?.count, count > 1 else { return }
-
         text = (text as NSString?)?.replacingCharacters(in: completionRange, with: "")
     }
 
@@ -146,10 +152,10 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         guard !completion.isEmpty, completion.lowercased().hasPrefix(text.lowercased()) else { return }
 
         // Add the completion suffix to the current text and highlight it.
-        let completion = completion.substring(from: completion.index(completion.startIndex, offsetBy: text.characters.count))
+		let completion = completion[completion.index(completion.startIndex, offsetBy: text.count)..<completion.endIndex]
         let attributed = NSMutableAttributedString(string: text + completion)
-        let range = NSMakeRange((text as NSString).length, (completion as NSString).length)
-        attributed.addAttribute(NSBackgroundColorAttributeName, value: highlightColor, range: range)
+        let range = NSMakeRange(text.count, completion.count)
+        attributed.addAttribute(.backgroundColor, value: highlightColor, range: range)
         attributedText = attributed
         completionRange = range
     }

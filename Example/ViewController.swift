@@ -12,19 +12,26 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         let textField = AutocompleteTextField()
+		textField.autocompleteDelegate = self
         textField.layer.borderColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1).cgColor
         textField.layer.borderWidth = 0.5
         textField.keyboardType = .webSearch
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.completionSource = domainCompletionSource
+		textField.placeholder = "Domain"
         textField.accessibilityLabel = "Domain"
         view.addSubview(textField)
 
         textField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
+			textField.heightAnchor.constraint(equalToConstant: 40.0),
             textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             textField.widthAnchor.constraint(equalTo: view.widthAnchor),
         ])
     }
+}
+
+extension ViewController: AutocompleteTextFieldDelegate {
+	
 }
