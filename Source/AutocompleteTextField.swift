@@ -41,7 +41,6 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         didSet {
             applyCompletion()
             super.text = text
-            autocompleteDelegate?.autocompleteTextField?(self, didTextChange: text ?? "")
         }
     }
 
