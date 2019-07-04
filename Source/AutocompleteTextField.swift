@@ -27,6 +27,9 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
     // The last string used as a replacement in shouldChangeCharactersInRange.
     private var lastReplacement: String?
 
+    // Used as a state flag after highlighting all the text
+    private var isHighlightingAll: Bool = false
+
     public init() {
         super.init(frame: CGRect.zero)
         addTarget(self, action: #selector(textDidChange), for: .editingChanged)
@@ -109,6 +112,7 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         self.text = nil
         setCompletion(text ?? "")
         selectedTextRange = textRange(from: beginningOfDocument, to: beginningOfDocument)
+        isHighlightingAll = true
     }
 
     private func applyCompletion() {
@@ -127,13 +131,19 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
     }
 
     private func removeCompletion() {
-        guard let completionRange = completionRange else { return }
+        guard var completionRange = completionRange else { return }
 
         applyCompletion()
 
         // Fixes: https://github.com/mozilla-mobile/focus-ios/issues/630
         // Prevents the hard crash when you select all and start a new query
         guard let count = text?.count, count > 1 else { return }
+
+        // Fixes the problem when after highlighting all, entire string is deleted instead of only old part
+        if isHighlightingAll {
+            completionRange.location += (count - completionRange.length)
+            isHighlightingAll = false
+        }
 
         text = (text as NSString?)?.replacingCharacters(in: completionRange, with: "")
     }
@@ -145,10 +155,10 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         guard !completion.isEmpty, completion.lowercased().hasPrefix(text.lowercased()) else { return }
 
         // Add the completion suffix to the current text and highlight it.
-        let completion = completion.substring(from: completion.index(completion.startIndex, offsetBy: text.characters.count))
+        let completion = completion[completion.index(completion.startIndex, offsetBy: text.count)...]
         let attributed = NSMutableAttributedString(string: text + completion)
         let range = NSMakeRange((text as NSString).length, (completion as NSString).length)
-        attributed.addAttribute(NSBackgroundColorAttributeName, value: highlightColor, range: range)
+        attributed.addAttribute(NSAttributedStringKey.backgroundColor, value: highlightColor, range: range)
         attributedText = attributed
         completionRange = range
     }
