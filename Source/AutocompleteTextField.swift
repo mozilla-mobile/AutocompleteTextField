@@ -148,7 +148,7 @@ open class AutocompleteTextField: UITextField, UITextFieldDelegate {
         let completion = completion.substring(from: completion.index(completion.startIndex, offsetBy: text.characters.count))
         let attributed = NSMutableAttributedString(string: text + completion)
         let range = NSMakeRange((text as NSString).length, (completion as NSString).length)
-        attributed.addAttribute(NSBackgroundColorAttributeName, value: highlightColor, range: range)
+        attributed.addAttribute(NSAttributedString.Key.backgroundColor, value: highlightColor, range: range)
         attributedText = attributed
         completionRange = range
     }
