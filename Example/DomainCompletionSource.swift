@@ -28,7 +28,7 @@ class DomainCompletionSource: AutocompleteTextFieldCompletionSource {
             // We don't actually want to match the top-level domain ("com", "org", etc.) by itself, so
             // so make sure the result includes at least one ".".
             let range = domainWithDotPrefix.index(range.lowerBound, offsetBy: 1)
-            let matchedDomain: String = domainWithDotPrefix.substring(from: range)
+            let matchedDomain: String = String(domainWithDotPrefix[range...])
             if matchedDomain.contains(".") {
                 return matchedDomain + "/"
             }
